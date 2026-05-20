@@ -49,10 +49,14 @@
         .btn-supprimer { background-color: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .zone-paiement { padding: 20px; background-color: #1a1a1a; border-top: 1px solid #333; }
         .total-final { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; color: white; }
-        .zone-identification { margin-bottom: 20px; }
+        
+        /* Nouveaux styles pour le formulaire d'identification détaillé */
+        .zone-identification { margin-bottom: 20px; display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
         .input-nom { width: 100%; box-sizing: border-box; padding: 15px; background-color: #2a2a2a; border: 1px solid #333; border-radius: 12px; color: white; font-size: 1.1rem; outline: none; transition: border-color 0.3s; }
         .input-nom:focus { border-color: #FFC107; }
         .input-nom::placeholder { color: #888; }
+        .input-table { grid-column: 1 / -1; } /* Prend toute la largeur pour la table */
+        
         .btn-commander { width: 100%; background-color: #FFC107; color: #121212; border: none; padding: 15px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
         .ecran-succes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 18, 18, 0.95); z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
         .ecran-succes.actif { opacity: 1; visibility: visible; }
@@ -67,18 +71,9 @@
         .toast-icone { font-size: 1.5rem; }
         .toast-texte { font-size: 0.95rem; font-weight: bold; margin-bottom: 3px; }
         .toast-lien { color: #FFC107; font-size: 0.85rem; text-decoration: underline; }
-
-        /* ÉCRAN DE VERROUILLAGE POUR INACTIVITÉ */
-        .ecran-verrouille { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0b1120; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; text-align: center; visibility: hidden; opacity: 0; transition: all 0.5s ease; }
     </style>
 </head>
 <body>
-
-    <div id="session-cloturee" class="ecran-verrouille">
-        <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
-        <div style="font-size: 1.6rem; color: #FFC107; font-weight: bold; margin-bottom: 15px;">Session Expirée (Inactivité)</div>
-        <p style="color: #9CA3AF; line-height: 1.6; max-width: 400px; margin: 0 auto;">Par sécurité, la session s'est fermée après 10 minutes d'inactivité. Veuillez <strong>rescanner le QR Code</strong> de votre table pour commander ou suivre l'état de votre commande.</p>
-    </div>
 
     <div class="header">
         <h2>MENU</h2>
@@ -92,12 +87,18 @@
 
     <div class="menu-container">
         <div id="section-aliments" class="menu-section active">
-            <div class="plat-card"><div class="plat-img">🍗</div><div class="plat-info"><p class="plat-nom">Poulet Braisé Entier</p><p class="plat-prix">6 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Poulet Braisé Entier', 6000)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍗</div><div class="plat-info"><p class="plat-nom">Poulet Braisé Entier</p><p class="plat-prix">6 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Poulet Braisé', 6000)">+ Ajouter</button></div>
             <div class="plat-card"><div class="plat-img">🐟</div><div class="plat-info"><p class="plat-nom">Poisson Choukouya</p><p class="plat-prix">5 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Poisson Choukouya', 5000)">+ Ajouter</button></div>
         </div>
+        
         <div id="section-boissons" class="menu-section">
-            <div class="plat-card"><div class="plat-img">🍺</div><div class="plat-info"><p class="plat-nom">Bière Bock (66cl)</p><p class="plat-prix">1 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Bière Bock', 1000)">+ Ajouter</button></div>
-            <div class="plat-card"><div class="plat-img">🥤</div><div class="plat-info"><p class="plat-nom">Coca-Cola</p><p class="plat-prix">800 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Coca-Cola', 800)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍺</div><div class="plat-info"><p class="plat-nom">Bière Bock</p><p class="plat-prix">500 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Bière Bock', 500)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍻</div><div class="plat-info"><p class="plat-nom">Heineken</p><p class="plat-prix">600 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Heineken', 600)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍋</div><div class="plat-info"><p class="plat-nom">Desperados</p><p class="plat-prix">500 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Desperados', 500)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🌿</div><div class="plat-info"><p class="plat-nom">Racine</p><p class="plat-prix">500 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Racine', 500)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍷</div><div class="plat-info"><p class="plat-nom">Vin</p><p class="plat-prix">1 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Vin', 1000)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🧊</div><div class="plat-info"><p class="plat-nom">Chill</p><p class="plat-prix">500 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Chill', 500)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🍇</div><div class="plat-info"><p class="plat-nom">Sangria</p><p class="plat-prix">500 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Sangria', 500)">+ Ajouter</button></div>
         </div>
     </div>
 
@@ -111,7 +112,13 @@
         <div id="liste-des-choix" class="contenu-scroll"></div>
         <div class="zone-paiement">
             <div class="total-final"><span>Total :</span><span id="total-final-prix" style="color: #FFC107;">0 FCFA</span></div>
-            <div class="zone-identification"><input type="text" id="nom-client" class="input-nom" placeholder="Votre Nom ou N° de Table (ex: Table 4)" required></div>
+            
+            <div class="zone-identification">
+                <input type="text" id="input-prenom" class="input-nom" placeholder="Votre Prénom" required>
+                <input type="text" id="input-nom" class="input-nom" placeholder="Votre Nom" required>
+                <input type="text" id="input-table" class="input-nom input-table" placeholder="Numéro de la Table (ex: 4)" required>
+            </div>
+            
             <button class="btn-commander" onclick="confirmerCommande()">✅ Envoyer au Serveur</button>
         </div>
     </div>
@@ -147,52 +154,43 @@
         let panier = []; 
         let historiqueCommandes = []; 
         let timerDuToast;
-        let CompteurInactivite;
 
-        // --- GESTION INACTIVITÉ ---
-        function lancerCompteurInactivite() {
-            clearTimeout(CompteurInactivite);
-            CompteurInactivite = setTimeout(fermerLeSite, 10 * 60 * 1000); 
-        }
-
-        function fermerLeSite() {
-            localStorage.clear(); 
-            let bloc = document.getElementById('session-cloturee');
-            bloc.style.visibility = 'visible';
-            bloc.style.opacity = '1';
-        }
-
-        ['click', 'touchstart', 'mousemove', 'scroll', 'keypress'].forEach(evenement => {
-            window.addEventListener(evenement, lancerCompteurInactivite);
-        });
-
-        // --- MÉMOIRE ET AUTO-COMPLÉTION TABLE ---
+        // --- MÉMOIRE INTELLIGENTE ET AUTO-COMPLÉTION ---
         function sauvegarderMemoire() {
             localStorage.setItem('maquis_panier', JSON.stringify(panier));
-            localStorage.setItem('maquis_historique', JSON.stringify(historiqueCommandes));
+            localStorage.setItem('historique_commandes', JSON.stringify(historiqueCommandes));
         }
 
         function chargerMemoire() {
             let p = localStorage.getItem('maquis_panier');
             if (p) panier = JSON.parse(p);
-            let h = localStorage.getItem('maquis_historique');
+            
+            let h = localStorage.getItem('historique_commandes');
             if (h) {
                 historiqueCommandes = JSON.parse(h);
+                // Relancer l'écoute des commandes en attente
                 historiqueCommandes.forEach(cmd => {
-                    if (cmd.statut.includes("⏳") && cmd.firebaseId) {
+                    if (cmd.statut && cmd.statut.includes("⏳") && cmd.firebaseId) {
                         ecouterStatutCommande(cmd.firebaseId, cmd.id);
                     }
                 });
             }
 
-            // AUTO-REMPLISSAGE DU CHAMP TABLE DEPUIS LA PAGE D'ACCUEIL
-            let tableAuto = localStorage.getItem('maquis_table_client');
-            if (tableAuto) {
-                document.getElementById('nom-client').value = tableAuto;
+            // AUTO-REMPLISSAGE DU FORMULAIRE D'IDENTIFICATION
+            let prenomSauvegarde = localStorage.getItem('client_prenom');
+            let nomSauvegarde = localStorage.getItem('client_nom');
+            let tableAutomatique = localStorage.getItem('maquis_table_client');
+            
+            if (prenomSauvegarde) document.getElementById('input-prenom').value = prenomSauvegarde;
+            if (nomSauvegarde) document.getElementById('input-nom').value = nomSauvegarde;
+            
+            // Si le client a scanné un QR Code avec "?table=X", on nettoie le mot "Table" pour ne garder que le numéro
+            if (tableAutomatique) {
+                let numeroSeul = tableAutomatique.replace('Table ', '');
+                document.getElementById('input-table').value = numeroSeul;
             }
 
             mettreAJourTotaux();
-            lancerCompteurInactivite(); 
         }
 
         chargerMemoire();
@@ -256,24 +254,47 @@
             panier.splice(index, 1); sauvegarderMemoire(); mettreAJourTotaux(); afficherContenuPanier();
         }
 
-        // --- NOUVELLE FONCTION SANS GPS ---
+        // --- ENVOI DE LA COMMANDE ET ENREGISTREMENT LOCAL ---
         async function confirmerCommande() {
             if (panier.length === 0) return;
 
-            let nomOuTable = document.getElementById('nom-client').value.trim();
-            if (nomOuTable === "") { alert("Veuillez indiquer votre nom ou numéro de table."); document.getElementById('nom-client').focus(); return; }
+            let prenom = document.getElementById('input-prenom').value.trim();
+            let nom = document.getElementById('input-nom').value.trim();
+            let table = document.getElementById('input-table').value.trim();
 
-            // Affichage de l'écran de chargement
+            if (prenom === "" || nom === "" || table === "") { 
+                alert("Veuillez remplir votre Prénom, Nom et Numéro de table pour situer le serveur."); 
+                return; 
+            }
+
+            // Mémorisation de l'identité pour les prochaines visites
+            localStorage.setItem('client_prenom', prenom);
+            localStorage.setItem('client_nom', nom);
+            localStorage.setItem('maquis_table_client', table);
+
             document.getElementById('ecran-succes').classList.add('actif');
 
             try {
-                // ENVOI DIRECT À FIREBASE (SANS VÉRIFIER LE GPS)
+                // Envoi à Firebase sous le format "Prénom Nom" et "Table X"
                 const docRef = await db.collection("commandes_clients").add({
-                    client: nomOuTable, table: nomOuTable, articles: panier.map(item => `${item.quantite}x ${item.nom}`), total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), statut: "En attente", date_creation: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+                    client: `${prenom} ${nom}`, 
+                    table: `Table ${table}`, 
+                    articles: panier.map(item => `${item.quantite}x ${item.nom}`), 
+                    total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), 
+                    statut: "En attente", 
+                    date_creation: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
                 });
 
                 let idLocal = docRef.id.substring(0, 5).toUpperCase();
-                let nouvelleCommandeLocale = { id: idLocal, firebaseId: docRef.id, client: nomOuTable, articles: [...panier], total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), statut: "⏳ En attente" };
+                let nouvelleCommandeLocale = { 
+                    id: idLocal, 
+                    firebaseId: docRef.id, 
+                    client: `${prenom} ${nom}`, 
+                    articles: [...panier], 
+                    total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), 
+                    statut: "⏳ En attente",
+                    date: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+                };
                 
                 historiqueCommandes.unshift(nouvelleCommandeLocale); 
                 sauvegarderMemoire(); 
@@ -281,9 +302,10 @@
 
                 // Réinitialisation après succès
                 setTimeout(function() {
-                    panier = []; document.getElementById('nom-client').value = localStorage.getItem('maquis_table_client') || ""; 
+                    panier = []; 
                     sauvegarderMemoire(); 
-                    mettreAJourTotaux(); fermerPanier();
+                    mettreAJourTotaux(); 
+                    fermerPanier();
                     setTimeout(function() { document.getElementById('ecran-succes').classList.remove('actif'); afficherToast("envoi"); }, 500);
                 }, 1500);
 
@@ -298,7 +320,7 @@
                 if (!docSnapshot.exists) {
                     let cmdToUpdate = historiqueCommandes.find(c => c.id === idLocal);
                     if (cmdToUpdate && cmdToUpdate.statut.includes("⏳")) {
-                        cmdToUpdate.statut = "✅ Validée";
+                        cmdToUpdate.statut = "✅ Validée par le serveur";
                         sauvegarderMemoire(); 
                         if (document.getElementById('ecran-historique').classList.contains('ouvert')) { afficherHistorique(); }
                         afficherToast("serveur"); 
@@ -313,13 +335,21 @@
 
         function afficherHistorique() {
             let listeHTML = document.getElementById('liste-historique');
-            if (historiqueCommandes.length === 0) { listeHTML.innerHTML = "<p style='text-align:center; color:#888;'>Aucune commande passée aujourd'hui.</p>"; return; }
+            if (historiqueCommandes.length === 0) { listeHTML.innerHTML = "<p style='text-align:center; color:#888;'>Aucune commande passée.</p>"; return; }
             listeHTML.innerHTML = ""; 
             historiqueCommandes.forEach(cmd => {
                 let badgeClass = (cmd.statut.includes("✅")) ? "badge-acceptee" : "badge-attente";
                 let detailsDesPlats = "";
                 cmd.articles.forEach(art => { detailsDesPlats += `• ${art.quantite}x ${art.nom}<br>`; });
-                listeHTML.innerHTML += `<div class="article-panier"><div class="article-top" style="margin-bottom: 5px;"><span>Réf: ${cmd.id}</span><span class="${badgeClass}">${cmd.statut}</span></div><div class="details-historique">${detailsDesPlats}</div><div style="text-align: right; color: #FFC107; font-weight: bold;">Total : ${cmd.total} FCFA</div></div>`;
+                listeHTML.innerHTML += `
+                <div class="article-panier">
+                    <div class="article-top" style="margin-bottom: 5px;">
+                        <span style="font-size:0.9rem; color:#888;">${cmd.date || ''}</span>
+                        <span class="${badgeClass}">${cmd.statut}</span>
+                    </div>
+                    <div class="details-historique">${detailsDesPlats}</div>
+                    <div style="text-align: right; color: #FFC107; font-weight: bold;">Total : ${cmd.total} FCFA</div>
+                </div>`;
             });
         }
 
