@@ -15,7 +15,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            height: 100vh; 
+            min-height: 100vh; 
             text-align: center; 
         }
         .header h1 { 
@@ -28,12 +28,13 @@
             font-size: 1.2rem; 
             color: #b3b3b3; 
             margin-top: 0; 
+            padding: 0 20px;
         }
         .table-info { 
             background-color: rgba(255, 255, 255, 0.1); 
             padding: 15px 30px; 
             border-radius: 12px; 
-            margin: 40px 0; 
+            margin: 20px 0; 
             font-size: 1.2rem; 
             border: 1px solid #333; 
         }
@@ -55,23 +56,53 @@
             cursor: pointer; 
             transition: transform 0.2s; 
             text-decoration: none; 
-            display: inline-block; 
+            display: inline-block;
+            margin-top: 10px;
         }
         .btn-menu:active { 
             transform: scale(0.95); 
         }
         .secours { 
-            margin-top: 50px; 
+            margin-top: 30px; 
             color: #888; 
             font-size: 1rem; 
             text-decoration: underline; 
             cursor: pointer; 
         }
+        /* Style pour l'historique des commandes */
+        .historique-box {
+            margin-top: 30px;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 400px;
+            text-align: left;
+            border: 1px solid #333;
+        }
+        .historique-box h3 {
+            color: #FFC107;
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+        .hist-item {
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            color: #ddd;
+        }
+        .hist-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
+    <div class="header" id="zone-accueil">
         <h1>MAQUIS LA JOIE</h1>
         <p>Akwaba ! Bienvenue chez nous.</p>
     </div>
@@ -82,26 +113,74 @@
 
     <a href="menu.html" class="btn-menu" id="bouton-menu">🍽️ Consulter le Menu</a>
 
+    <div id="zone-historique"></div>
+
     <div class="secours" onclick="alert('Un serveur a été notifié et arrive à votre table !')">
         🙋‍♂️ Appeler un serveur
     </div>
 
     <script>
-        // Le système intelligent qui lit l'adresse web du QR Code
-        // Exemple : s'il scanne https://tonsite.com/?table=VIP
+        // 1. Lire le QR code (ex: ?table=5)
         const urlParams = new URLSearchParams(window.location.search);
         let numTable = urlParams.get('table');
+        let tableFinale = "";
 
+        // Si un nouveau QR code est scanné, on met à jour la mémoire
         if (numTable) {
-            // Affiche le numéro sur l'écran d'accueil
-            document.getElementById('zone-table').innerHTML = `📍 Vous êtes installé à la <strong>Table ${numTable}</strong>`;
-            
-            // Sauvegarde le numéro en mémoire pour que le fichier menu.html puisse l'utiliser !
-            localStorage.setItem('maquis_table_client', 'Table ' + numTable);
+            tableFinale = numTable;
+            localStorage.setItem('maquis_table_client', tableFinale);
         } else {
-            // Si le client va sur le site sans scanner de QR code spécifique
-            document.getElementById('zone-table').innerHTML = `📍 Bienvenue ! <br><span style="font-size:1rem; color:#888;">(Table non détectée, précisez-la dans le panier)</span>`;
-            localStorage.removeItem('maquis_table_client');
+            // Sinon on regarde si la table est déjà en mémoire
+            tableFinale = localStorage.getItem('maquis_table_client') || "";
+        }
+
+        // 2. Récupérer l'identité du client et son historique
+        const nom = localStorage.getItem('client_nom');
+        const prenom = localStorage.getItem('client_prenom');
+        const historiqueStr = localStorage.getItem('historique_commandes');
+        let historique = [];
+        if (historiqueStr) {
+            historique = JSON.parse(historiqueStr);
+        }
+
+        // 3. Modifier la page en fonction des données
+        const zoneAccueil = document.getElementById('zone-accueil');
+        const zoneTable = document.getElementById('zone-table');
+        const zoneHistorique = document.getElementById('zone-historique');
+
+        // Message de bienvenue personnalisé
+        if (nom && prenom) {
+            zoneAccueil.innerHTML = `
+                <h1>MAQUIS LA JOIE</h1>
+                <p style="color:#FFC107; font-weight:bold;">Bonjour M./Mme ${prenom} ${nom}, ravi de vous revoir !</p>
+            `;
+        }
+
+        // Affichage de la table
+        if (tableFinale !== "") {
+            zoneTable.innerHTML = `📍 Vous êtes installé à la <br><strong>Table ${tableFinale}</strong>`;
+        } else {
+            zoneTable.innerHTML = `📍 Bienvenue ! <br><span style="font-size:1rem; color:#888;">(Table non détectée, vous pourrez la préciser lors de la commande)</span>`;
+        }
+
+        // Affichage de l'historique (les 2 dernières commandes)
+        if (historique.length > 0) {
+            let histHTML = `<div class="historique-box">
+                <h3>Vos dernières commandes</h3>`;
+            
+            // Prendre les 2 dernières commandes du plus récent au plus ancien
+            const dernieres = historique.slice(-2).reverse();
+            
+            dernieres.forEach(cmd => {
+                histHTML += `
+                <div class="hist-item">
+                    📅 ${cmd.date}<br>
+                    🛒 ${cmd.articles}<br>
+                    💰 <strong>${cmd.total} FCFA</strong>
+                </div>`;
+            });
+            histHTML += `</div>`;
+            zoneHistorique.innerHTML = histHTML;
         }
     </script>
 
