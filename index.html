@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquis La Joie - Accueil</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; 
+            background-color: #121212; 
+            color: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            text-align: center; 
+        }
+        .header h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 5px; 
+            color: #FFC107; 
+            letter-spacing: 2px; 
+        }
+        .header p { 
+            font-size: 1.2rem; 
+            color: #b3b3b3; 
+            margin-top: 0; 
+        }
+        .table-info { 
+            background-color: rgba(255, 255, 255, 0.1); 
+            padding: 15px 30px; 
+            border-radius: 12px; 
+            margin: 40px 0; 
+            font-size: 1.2rem; 
+            border: 1px solid #333; 
+        }
+        .table-info strong { 
+            color: #FFC107; 
+            font-size: 1.6rem; 
+            display: block;
+            margin-top: 8px;
+        }
+        .btn-menu { 
+            background-color: #FFC107; 
+            color: #121212; 
+            border: none; 
+            padding: 15px 40px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            border-radius: 30px; 
+            box-shadow: 0px 4px 15px rgba(255, 193, 7, 0.4); 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+            text-decoration: none; 
+            display: inline-block; 
+        }
+        .btn-menu:active { 
+            transform: scale(0.95); 
+        }
+        .secours { 
+            margin-top: 50px; 
+            color: #888; 
+            font-size: 1rem; 
+            text-decoration: underline; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>MAQUIS LA JOIE</h1>
+        <p>Akwaba ! Bienvenue chez nous.</p>
+    </div>
+
+    <div class="table-info" id="zone-table">
+        📍 Vous êtes installé à la <br><strong>Recherche de la table...</strong>
+    </div>
+
+    <a href="menu.html" class="btn-menu" id="bouton-menu">🍽️ Consulter le Menu</a>
+
+    <div class="secours" onclick="alert('Un serveur a été notifié et arrive à votre table !')">
+        🙋‍♂️ Appeler un serveur
+    </div>
+
+    <script>
+        // Le système intelligent qui lit l'adresse web du QR Code
+        // Exemple : s'il scanne https://tonsite.com/?table=VIP
+        const urlParams = new URLSearchParams(window.location.search);
+        let numTable = urlParams.get('table');
+
+        if (numTable) {
+            // Affiche le numéro sur l'écran d'accueil
+            document.getElementById('zone-table').innerHTML = `📍 Vous êtes installé à la <strong>Table ${numTable}</strong>`;
+            
+            // Sauvegarde le numéro en mémoire pour que le fichier menu.html puisse l'utiliser !
+            localStorage.setItem('maquis_table_client', 'Table ' + numTable);
+        } else {
+            // Si le client va sur le site sans scanner de QR code spécifique
+            document.getElementById('zone-table').innerHTML = `📍 Bienvenue ! <br><span style="font-size:1rem; color:#888;">(Table non détectée, précisez-la dans le panier)</span>`;
+            localStorage.removeItem('maquis_table_client');
+        }
+    </script>
+
+</body>
+</html>
