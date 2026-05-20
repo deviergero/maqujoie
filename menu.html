@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Premium - Maquis La Joie</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; background-color: #121212; color: #ffffff; padding-bottom: 100px; overflow-x: hidden; }
+        .header { padding: 20px; text-align: center; background-color: #1a1a1a; border-bottom: 1px solid #333; position: relative; }
+        .header h2 { margin: 0; color: #FFC107; font-size: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
+        .btn-historique { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background-color: rgba(255, 193, 7, 0.05); color: #FFC107; border: 1px solid rgba(255, 193, 7, 0.5); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .btn-historique:hover { background-color: rgba(255, 193, 7, 0.15); border-color: #FFC107; box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); }
+        .tabs { display: flex; padding: 15px 20px; gap: 15px; background-color: #1a1a1a; justify-content: center; position: sticky; top: 0; z-index: 100; }
+        .tab { padding: 12px 25px; background-color: #2a2a2a; color: #b3b3b3; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .tab.active { background-color: #FFC107; color: #121212; transform: scale(1.05); box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); }
+        .menu-container { padding: 20px; position: relative; }
+        .menu-section { display: block; opacity: 0; transform: translateX(50px); visibility: hidden; height: 0; transition: all 0.5s ease-out; pointer-events: none; }
+        .menu-section.active { opacity: 1; transform: translateX(0); visibility: visible; height: auto; pointer-events: auto; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .plat-card { background-color: #1e1e1e; border-radius: 16px; padding: 18px; display: flex; align-items: center; margin-bottom: 20px; border: 1px solid #333; transition: all 0.3s ease; opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+        .plat-card:hover { transform: translateY(-5px); background-color: #252525; border-color: #555; }
+        .plat-img { width: 75px; height: 75px; background-color: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-right: 18px; border: 1px solid #333; }
+        .plat-info { flex-grow: 1; }
+        .plat-nom { font-size: 1.15rem; margin: 0 0 5px 0; font-weight: bold; }
+        .plat-prix { color: #FFC107; margin: 0; font-size: 1.1rem; font-weight: bold; }
+        .btn-ajouter { background-color: #FFC107; color: #121212; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-ajouter:active { transform: scale(0.92); }
+        .panier-flottant { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a1a1a; border-top: 1px solid #333; padding: 15px 0; display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.4s; z-index: 1000; }
+        .panier-flottant.visible { transform: translateY(0); }
+        .panier-resume { font-size: 1.1rem; color: #fff; }
+        .panier-total-prix { color: #FFC107; font-weight: bold; font-size: 1.3rem; }
+        .btn-valider { background-color: #FFC107; color: #121212; border: none; padding: 12px 25px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .ecran-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #121212; z-index: 2000; transform: translateX(100%); transition: transform 0.3s ease-out; display: flex; flex-direction: column; }
+        .ecran-modal.ouvert { transform: translateX(0); }
+        .entete-modal { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; background-color: #1a1a1a; }
+        .entete-modal h3 { margin: 0; color: #FFC107; font-size: 1.5rem; }
+        .btn-fermer { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+        .contenu-scroll { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        .article-panier { background-color: #1e1e1e; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .article-top { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem; }
+        .article-controles { display: flex; justify-content: space-between; align-items: center; }
+        .controle-qte { display: flex; align-items: center; background-color: #2a2a2a; border-radius: 8px; overflow: hidden; }
+        .btn-qte { background-color: transparent; color: white; border: none; padding: 10px 15px; font-size: 1.2rem; cursor: pointer; }
+        .qte-chiffre { padding: 0 15px; font-weight: bold; }
+        .btn-supprimer { background-color: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .zone-paiement { padding: 20px; background-color: #1a1a1a; border-top: 1px solid #333; }
+        .total-final { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; color: white; }
+        .zone-identification { margin-bottom: 20px; }
+        .input-nom { width: 100%; box-sizing: border-box; padding: 15px; background-color: #2a2a2a; border: 1px solid #333; border-radius: 12px; color: white; font-size: 1.1rem; outline: none; transition: border-color 0.3s; }
+        .input-nom:focus { border-color: #FFC107; }
+        .input-nom::placeholder { color: #888; }
+        .btn-commander { width: 100%; background-color: #FFC107; color: #121212; border: none; padding: 15px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        .ecran-succes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 18, 18, 0.95); z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .ecran-succes.actif { opacity: 1; visibility: visible; }
+        .icone-succes { font-size: 5rem; margin-bottom: 20px; transform: scale(0); transition: 0.5s; }
+        .ecran-succes.actif .icone-succes { transform: scale(1); }
+        .message-succes { font-size: 1.5rem; color: #FFC107; font-weight: bold; text-align: center; }
+        .badge-attente { background-color: #e67e22; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .badge-acceptee { background-color: #10B981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .details-historique { font-size: 0.95rem; color: #aaa; margin-bottom: 10px; line-height: 1.4; }
+        .toast-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150px); background-color: #2a2a2a; color: white; padding: 12px 20px; border-radius: 12px; border-left: 5px solid #FFC107; box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 15px; z-index: 4000; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; width: max-content; max-width: 90%; }
+        .toast-notification.visible { transform: translateX(-50%) translateY(0); }
+        .toast-icone { font-size: 1.5rem; }
+        .toast-texte { font-size: 0.95rem; font-weight: bold; margin-bottom: 3px; }
+        .toast-lien { color: #FFC107; font-size: 0.85rem; text-decoration: underline; }
+
+        /* ÉCRAN DE VERROUILLAGE POUR INACTIVITÉ */
+        .ecran-verrouille { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0b1120; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; text-align: center; visibility: hidden; opacity: 0; transition: all 0.5s ease; }
+    </style>
+</head>
+<body>
+
+    <div id="session-cloturee" class="ecran-verrouille">
+        <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+        <div style="font-size: 1.6rem; color: #FFC107; font-weight: bold; margin-bottom: 15px;">Session Expirée (Inactivité)</div>
+        <p style="color: #9CA3AF; line-height: 1.6; max-width: 400px; margin: 0 auto;">Par sécurité, la session s'est fermée après 10 minutes d'inactivité. Veuillez <strong>rescanner le QR Code</strong> de votre table pour commander ou suivre l'état de votre commande.</p>
+    </div>
+
+    <div class="header">
+        <h2>MENU</h2>
+        <button class="btn-historique" onclick="ouvrirHistorique()">📜 Historique</button>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" id="btn-aliments" onclick="changerOnglet('aliments')">🍗 Aliments</div>
+        <div class="tab" id="btn-boissons" onclick="changerOnglet('boissons')">🍹 Boissons</div>
+    </div>
+
+    <div class="menu-container">
+        <div id="section-aliments" class="menu-section active">
+            <div class="plat-card"><div class="plat-img">🍗</div><div class="plat-info"><p class="plat-nom">Poulet Braisé Entier</p><p class="plat-prix">6 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Poulet Braisé Entier', 6000)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🐟</div><div class="plat-info"><p class="plat-nom">Poisson Choukouya</p><p class="plat-prix">5 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Poisson Choukouya', 5000)">+ Ajouter</button></div>
+        </div>
+        <div id="section-boissons" class="menu-section">
+            <div class="plat-card"><div class="plat-img">🍺</div><div class="plat-info"><p class="plat-nom">Bière Bock (66cl)</p><p class="plat-prix">1 000 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Bière Bock', 1000)">+ Ajouter</button></div>
+            <div class="plat-card"><div class="plat-img">🥤</div><div class="plat-info"><p class="plat-nom">Coca-Cola</p><p class="plat-prix">800 FCFA</p></div><button class="btn-ajouter" onclick="ajouterAuPanier('Coca-Cola', 800)">+ Ajouter</button></div>
+        </div>
+    </div>
+
+    <div id="mon-panier" class="panier-flottant">
+        <div class="panier-resume"><span id="nombre-articles">0</span> article(s) = <br><span id="prix-total" class="panier-total-prix">0</span> <span class="panier-total-prix">FCFA</span></div>
+        <button class="btn-valider" onclick="ouvrirPanier()">Voir Panier ➔</button>
+    </div>
+
+    <div id="ecran-details" class="ecran-modal">
+        <div class="entete-modal"><h3>Mon Panier</h3><button class="btn-fermer" onclick="fermerPanier()">×</button></div>
+        <div id="liste-des-choix" class="contenu-scroll"></div>
+        <div class="zone-paiement">
+            <div class="total-final"><span>Total :</span><span id="total-final-prix" style="color: #FFC107;">0 FCFA</span></div>
+            <div class="zone-identification"><input type="text" id="nom-client" class="input-nom" placeholder="Votre Nom ou N° de Table (ex: Table 4)" required></div>
+            <button class="btn-commander" onclick="confirmerCommande()">✅ Envoyer au Serveur</button>
+        </div>
+    </div>
+
+    <div id="ecran-historique" class="ecran-modal">
+        <div class="entete-modal"><h3>Mes Commandes</h3><button class="btn-fermer" onclick="fermerHistorique()">×</button></div>
+        <div id="liste-historique" class="contenu-scroll"><p style="text-align:center; color:#888;">Aucune commande passée.</p></div>
+    </div>
+
+    <div id="ecran-succes" class="ecran-succes">
+        <div class="icone-succes">🚀</div><div class="message-succes">Commande envoyée au maquis !</div>
+    </div>
+
+    <div id="toast-notification" class="toast-notification" onclick="ouvrirHistoriqueDepuisToast()">
+        <div class="toast-icone">🔔</div>
+        <div><div class="toast-texte" id="toast-texte">Commande transmise avec succès !</div><div class="toast-lien">Cliquez ici pour suivre son statut ➔</div></div>
+    </div>
+
+    <div id="toast-serveur" class="toast-notification" style="border-left-color: #10B981;" onclick="ouvrirHistoriqueDepuisToast()">
+        <div class="toast-icone">👨‍🍳</div>
+        <div><div class="toast-texte">Votre commande a été validée !</div><div class="toast-lien" style="color: #10B981;">Voir l'historique ➔</div></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGL3A-jZLKyef45JvcTAWnJKxY2HoAZq0",
+            authDomain: "maqui-1946e.firebaseapp.com",
+            projectId: "maqui-1946e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let panier = []; 
+        let historiqueCommandes = []; 
+        let timerDuToast;
+        let CompteurInactivite;
+
+        // --- GESTION INACTIVITÉ ---
+        function lancerCompteurInactivite() {
+            clearTimeout(CompteurInactivite);
+            CompteurInactivite = setTimeout(fermerLeSite, 10 * 60 * 1000); 
+        }
+
+        function fermerLeSite() {
+            localStorage.clear(); 
+            let bloc = document.getElementById('session-cloturee');
+            bloc.style.visibility = 'visible';
+            bloc.style.opacity = '1';
+        }
+
+        ['click', 'touchstart', 'mousemove', 'scroll', 'keypress'].forEach(evenement => {
+            window.addEventListener(evenement, lancerCompteurInactivite);
+        });
+
+        // --- MÉMOIRE ET AUTO-COMPLÉTION TABLE ---
+        function sauvegarderMemoire() {
+            localStorage.setItem('maquis_panier', JSON.stringify(panier));
+            localStorage.setItem('maquis_historique', JSON.stringify(historiqueCommandes));
+        }
+
+        function chargerMemoire() {
+            let p = localStorage.getItem('maquis_panier');
+            if (p) panier = JSON.parse(p);
+            let h = localStorage.getItem('maquis_historique');
+            if (h) {
+                historiqueCommandes = JSON.parse(h);
+                historiqueCommandes.forEach(cmd => {
+                    if (cmd.statut.includes("⏳") && cmd.firebaseId) {
+                        ecouterStatutCommande(cmd.firebaseId, cmd.id);
+                    }
+                });
+            }
+
+            // AUTO-REMPLISSAGE DU CHAMP TABLE DEPUIS LA PAGE D'ACCUEIL
+            let tableAuto = localStorage.getItem('maquis_table_client');
+            if (tableAuto) {
+                document.getElementById('nom-client').value = tableAuto;
+            }
+
+            mettreAJourTotaux();
+            lancerCompteurInactivite(); 
+        }
+
+        chargerMemoire();
+
+        function changerOnglet(categorieSelectionnee) {
+            document.getElementById('btn-aliments').classList.remove('active');
+            document.getElementById('btn-boissons').classList.remove('active');
+            document.getElementById('section-aliments').classList.remove('active');
+            document.getElementById('section-boissons').classList.remove('active');
+            document.getElementById('btn-' + categorieSelectionnee).classList.add('active');
+            document.getElementById('section-' + categorieSelectionnee).classList.add('active');
+        }
+
+        function ajouterAuPanier(nomDuPlat, prixDuPlat) {
+            let indexExistant = panier.findIndex(article => article.nom === nomDuPlat);
+            if (indexExistant !== -1) { panier[indexExistant].quantite += 1; } 
+            else { panier.push({ nom: nomDuPlat, prix: prixDuPlat, quantite: 1 }); }
+            sauvegarderMemoire(); mettreAJourTotaux();
+        }
+
+        function mettreAJourTotaux() {
+            let totalFCFA = 0; let totalArticles = 0;
+            for (let i = 0; i < panier.length; i++) {
+                totalFCFA += (panier[i].prix * panier[i].quantite);
+                totalArticles += panier[i].quantite;
+            }
+            document.getElementById('nombre-articles').innerText = totalArticles;
+            document.getElementById('prix-total').innerText = totalFCFA;
+            if (totalArticles > 0) { document.getElementById('mon-panier').classList.add('visible'); } 
+            else { document.getElementById('mon-panier').classList.remove('visible'); fermerPanier(); }
+        }
+
+        function ouvrirPanier() { document.getElementById('ecran-details').classList.add('ouvert'); afficherContenuPanier(); }
+        function fermerPanier() { document.getElementById('ecran-details').classList.remove('ouvert'); }
+
+        function afficherContenuPanier() {
+            let listeHTML = document.getElementById('liste-des-choix');
+            listeHTML.innerHTML = ""; let totalFCFA = 0;
+            for (let i = 0; i < panier.length; i++) {
+                let sousTotal = panier[i].prix * panier[i].quantite;
+                totalFCFA += sousTotal;
+                listeHTML.innerHTML += `
+                    <div class="article-panier">
+                        <div class="article-top"><span>${panier[i].nom}</span><span style="color: #FFC107;">${sousTotal} FCFA</span></div>
+                        <div class="article-controles">
+                            <div class="controle-qte"><button class="btn-qte" onclick="modifierQuantite(${i}, -1)">-</button><span class="qte-chiffre">${panier[i].quantite}</span><button class="btn-qte" onclick="modifierQuantite(${i}, 1)">+</button></div>
+                            <button class="btn-supprimer" onclick="supprimerArticle(${i})">🗑️</button>
+                        </div>
+                    </div>`;
+            }
+            document.getElementById('total-final-prix').innerText = totalFCFA + " FCFA";
+        }
+
+        function modifierQuantite(index, changement) {
+            panier[index].quantite += changement;
+            if (panier[index].quantite <= 0) supprimerArticle(index);
+            else { sauvegarderMemoire(); mettreAJourTotaux(); afficherContenuPanier(); }
+        }
+
+        function supprimerArticle(index) {
+            panier.splice(index, 1); sauvegarderMemoire(); mettreAJourTotaux(); afficherContenuPanier();
+        }
+
+        // --- NOUVELLE FONCTION SANS GPS ---
+        async function confirmerCommande() {
+            if (panier.length === 0) return;
+
+            let nomOuTable = document.getElementById('nom-client').value.trim();
+            if (nomOuTable === "") { alert("Veuillez indiquer votre nom ou numéro de table."); document.getElementById('nom-client').focus(); return; }
+
+            // Affichage de l'écran de chargement
+            document.getElementById('ecran-succes').classList.add('actif');
+
+            try {
+                // ENVOI DIRECT À FIREBASE (SANS VÉRIFIER LE GPS)
+                const docRef = await db.collection("commandes_clients").add({
+                    client: nomOuTable, table: nomOuTable, articles: panier.map(item => `${item.quantite}x ${item.nom}`), total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), statut: "En attente", date_creation: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+                });
+
+                let idLocal = docRef.id.substring(0, 5).toUpperCase();
+                let nouvelleCommandeLocale = { id: idLocal, firebaseId: docRef.id, client: nomOuTable, articles: [...panier], total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0), statut: "⏳ En attente" };
+                
+                historiqueCommandes.unshift(nouvelleCommandeLocale); 
+                sauvegarderMemoire(); 
+                ecouterStatutCommande(docRef.id, idLocal);
+
+                // Réinitialisation après succès
+                setTimeout(function() {
+                    panier = []; document.getElementById('nom-client').value = localStorage.getItem('maquis_table_client') || ""; 
+                    sauvegarderMemoire(); 
+                    mettreAJourTotaux(); fermerPanier();
+                    setTimeout(function() { document.getElementById('ecran-succes').classList.remove('actif'); afficherToast("envoi"); }, 500);
+                }, 1500);
+
+            } catch (error) { 
+                alert("Erreur réseau. Recommencez."); 
+                document.getElementById('ecran-succes').classList.remove('actif'); 
+            }
+        }
+
+        function ecouterStatutCommande(firebaseId, idLocal) {
+            const unsub = db.collection("commandes_clients").doc(firebaseId).onSnapshot((docSnapshot) => {
+                if (!docSnapshot.exists) {
+                    let cmdToUpdate = historiqueCommandes.find(c => c.id === idLocal);
+                    if (cmdToUpdate && cmdToUpdate.statut.includes("⏳")) {
+                        cmdToUpdate.statut = "✅ Validée";
+                        sauvegarderMemoire(); 
+                        if (document.getElementById('ecran-historique').classList.contains('ouvert')) { afficherHistorique(); }
+                        afficherToast("serveur"); 
+                    }
+                    unsub(); 
+                }
+            });
+        }
+
+        function ouvrirHistorique() { document.getElementById('ecran-historique').classList.add('ouvert'); afficherHistorique(); }
+        function fermerHistorique() { document.getElementById('ecran-historique').classList.remove('ouvert'); }
+
+        function afficherHistorique() {
+            let listeHTML = document.getElementById('liste-historique');
+            if (historiqueCommandes.length === 0) { listeHTML.innerHTML = "<p style='text-align:center; color:#888;'>Aucune commande passée aujourd'hui.</p>"; return; }
+            listeHTML.innerHTML = ""; 
+            historiqueCommandes.forEach(cmd => {
+                let badgeClass = (cmd.statut.includes("✅")) ? "badge-acceptee" : "badge-attente";
+                let detailsDesPlats = "";
+                cmd.articles.forEach(art => { detailsDesPlats += `• ${art.quantite}x ${art.nom}<br>`; });
+                listeHTML.innerHTML += `<div class="article-panier"><div class="article-top" style="margin-bottom: 5px;"><span>Réf: ${cmd.id}</span><span class="${badgeClass}">${cmd.statut}</span></div><div class="details-historique">${detailsDesPlats}</div><div style="text-align: right; color: #FFC107; font-weight: bold;">Total : ${cmd.total} FCFA</div></div>`;
+            });
+        }
+
+        function afficherToast(type) {
+            let toastId = type === "serveur" ? 'toast-serveur' : 'toast-notification';
+            let toast = document.getElementById(toastId);
+            toast.classList.add('visible'); 
+            clearTimeout(timerDuToast);
+            timerDuToast = setTimeout(function() { cacherToast(toastId); }, 6000);
+        }
+
+        function cacherToast(toastId = 'toast-notification') {
+            document.getElementById('toast-notification').classList.remove('visible');
+            document.getElementById('toast-serveur').classList.remove('visible');
+        }
+
+        function ouvrirHistoriqueDepuisToast() { cacherToast(); ouvrirHistorique(); }
+    </script>
+</body>
+</html>
