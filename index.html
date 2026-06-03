@@ -3,399 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINGULARITY V48 | Intelligence Algorithmique</title>
-    <!-- Importation des polices professionnelles -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <title>Maquis La Joie - Accueil</title>
     <style>
-        :root {
-            --bg-color: #050b14;
-            --panel-bg: rgba(13, 20, 36, 0.85);
-            --primary: #00e5ff;
-            --success: #00ff88;
-            --warning: #ffb700;
-            --danger: #ff2a5f;
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; 
+            background-color: #121212; 
+            color: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            text-align: center; 
         }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            background-image: 
-                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        .header h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 5px; 
+            color: #FFC107; 
+            letter-spacing: 2px; 
         }
-
-        .dashboard {
-            width: 95%;
-            max-width: 480px;
-            margin: 20px 0;
+        .header p { 
+            font-size: 1.2rem; 
+            color: #b3b3b3; 
+            margin-top: 0; 
+            padding: 0 20px;
         }
-
-        .glass-panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 229, 255, 0.15);
-            border-radius: 20px;
-            padding: 30px 25px;
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
+        .table-info { 
+            background-color: rgba(255, 255, 255, 0.1); 
+            padding: 15px 30px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            font-size: 1.2rem; 
+            border: 1px solid #333; 
         }
-
-        /* En-tête */
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 15px;
+        .table-info strong { 
+            color: #FFC107; 
+            font-size: 1.6rem; 
+            display: block;
+            margin-top: 8px;
         }
-
-        h1 {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2.4rem;
-            margin: 0;
-            letter-spacing: 3px;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-        }
-
-        .status-badge {
+        .btn-menu { 
+            background-color: #FFC107; 
+            color: #121212; 
+            border: none; 
+            padding: 15px 40px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            border-radius: 30px; 
+            box-shadow: 0px 4px 15px rgba(255, 193, 7, 0.4); 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+            text-decoration: none; 
             display: inline-block;
-            background: rgba(0, 255, 136, 0.05);
-            color: var(--success);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
             margin-top: 10px;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
-
-        /* Bouton Action */
-        .btn-action {
-            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(0, 229, 255, 0));
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 18px;
-            width: 100%;
+        .btn-menu:active { 
+            transform: scale(0.95); 
+        }
+        .secours { 
+            margin-top: 30px; 
+            color: #888; 
+            font-size: 1rem; 
+            text-decoration: underline; 
+            cursor: pointer; 
+        }
+        /* Style pour l'historique des commandes */
+        .historique-box {
+            margin-top: 30px;
+            background: #1e1e1e;
+            padding: 15px;
             border-radius: 12px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1) inset;
+            width: 85%;
+            max-width: 400px;
+            text-align: left;
+            border: 1px solid #333;
         }
-
-        .btn-action:hover {
-            background: var(--primary);
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
-        }
-
-        /* Animation Chargement */
-        .loading-zone {
-            display: none;
+        .historique-box h3 {
+            color: #FFC107;
             text-align: center;
-            padding: 30px 0;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(0, 229, 255, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px auto;
-        }
-
-        .loading-text {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--primary);
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Rapport Stratégique */
-        .result-box {
-            display: none;
-            margin-top: 15px;
-            animation: slideUp 0.4s ease-out;
-        }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .strategy-card {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .micro-data-box {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 2px solid var(--primary);
-        }
-
-        .micro-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .micro-value {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            color: #fff;
-        }
-
-        .target-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .target-col {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .target-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .target-multiplier {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--success);
-            text-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-            line-height: 1;
-        }
-
-        .time-box {
-            text-align: center;
-            background: rgba(0, 229, 255, 0.05);
-            padding: 12px;
-            border-radius: 8px;
+            margin-top: 0;
             font-size: 1.1rem;
-            font-family: 'Space Mono', monospace;
-            color: var(--primary);
-            border: 1px dashed rgba(0, 229, 255, 0.3);
-            margin-bottom: 20px;
         }
-
-        .advice-box {
-            background: rgba(255, 183, 0, 0.05);
-            border-left: 3px solid var(--warning);
-            padding: 12px 15px;
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            line-height: 1.5;
+        .hist-item {
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            color: #ddd;
         }
-
-        .btn-restart {
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: 0.2s;
-        }
-
-        .btn-restart:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
+        .hist-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="glass-panel">
-        
-        <div class="header">
-            <h1>SINGULARITY V48</h1>
-            <div class="status-badge">● ANALYSE DE MICRO-DONNÉES ACTIVE</div>
-        </div>
-
-        <button id="actionBtn" class="btn-action" onclick="generatePrediction()">GÉNÉRER UN POINT D'ENTRÉE</button>
-
-        <div id="loadingZone" class="loading-zone">
-            <div class="spinner"></div>
-            <div id="loadingMessage" class="loading-text">Capture du flux de données...</div>
-        </div>
-
-        <div id="resultBox" class="result-box">
-            <div class="strategy-card">
-                
-                <!-- Micro Données -->
-                <div class="micro-data-box">
-                    <div>
-                        <div class="micro-label">Psychologie de Masse</div>
-                        <div class="micro-value" id="psychoData">--</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="micro-label">Indice de Pression</div>
-                        <div class="micro-value" id="pressureData">--</div>
-                    </div>
-                </div>
-
-                <div class="time-box">
-                    Fenêtre de Frappe : <span id="targetTime" style="color: #fff;">--:--</span>
-                </div>
-
-                <!-- Cibles -->
-                <div class="target-grid">
-                    <div class="target-col">
-                        <div class="target-label">Cible Sécurisée</div>
-                        <div class="target-multiplier" id="safeTarget" style="color: var(--primary);">0.00x</div>
-                    </div>
-                    <div class="target-col" style="border-color: rgba(0, 255, 136, 0.2); background: rgba(0, 255, 136, 0.02);">
-                        <div class="target-label">Cible Sniper</div>
-                        <div class="target-multiplier" id="sniperTarget">0.00x</div>
-                    </div>
-                </div>
-
-                <!-- Conseil -->
-                <div class="advice-box" id="strategicAdvice">
-                    Calcul de la tactique...
-                </div>
-
-            </div>
-
-            <button class="btn-restart" onclick="resetRadar()">Relancer le Scanner</button>
-        </div>
-
+    <div class="header" id="zone-accueil">
+        <h1>MAQUIS LA JOIE</h1>
+        <p>Akwaba ! Bienvenue chez nous.</p>
     </div>
-</div>
 
-<script>
-    const psychoStates = [
-        "Aversion au Risque (Favorable)", 
-        "Euphorie du Lobby (Danger modéré)", 
-        "Accumulation Neutre",
-        "Panique Vendeuse (Opportunité)"
-    ];
+    <div class="table-info" id="zone-table">
+        📍 Vous êtes installé à la <br><strong>Recherche de la table...</strong>
+    </div>
 
-    const strategies = [
-        {
-            type: "STANDARD",
-            targetMin: 1.80, targetMax: 2.20,
-            advice: "Configuration stable. Utilisez la Cible Sécurisée pour 70% de votre mise, et laissez courir les 30% restants jusqu'à la Cible Sniper."
-        },
-        {
-            type: "VOLATILE",
-            targetMin: 1.50, targetMax: 1.75,
-            advice: "Pression algorithmique forte. Ne cherchez pas l'exploit. Encaissez 100% de la mise sur la Cible Sécurisée."
-        },
-        {
-            type: "RUPTURE",
-            targetMin: 2.50, targetMax: 4.00,
-            advice: "Forte probabilité de pompe. Adoptez une approche millimétrée : divisez votre mise habituelle par deux pour gérer le risque."
+    <a href="menu.html" class="btn-menu" id="bouton-menu">🍽️ Consulter le Menu</a>
+
+    <div id="zone-historique"></div>
+
+    <div class="secours" onclick="alert('Un serveur a été notifié et arrive à votre table !')">
+        🙋‍♂️ Appeler un serveur
+    </div>
+
+    <script>
+        // 1. Lire le QR code (ex: ?table=5)
+        const urlParams = new URLSearchParams(window.location.search);
+        let numTable = urlParams.get('table');
+        let tableFinale = "";
+
+        // Si un nouveau QR code est scanné, on met à jour la mémoire
+        if (numTable) {
+            tableFinale = numTable;
+            localStorage.setItem('maquis_table_client', tableFinale);
+        } else {
+            // Sinon on regarde si la table est déjà en mémoire
+            tableFinale = localStorage.getItem('maquis_table_client') || "";
         }
-    ];
 
-    const loadingMessages = [
-        "Extraction des micro-données...",
-        "Analyse de la psychologie du lobby...",
-        "Calcul de la pression algorithmique...",
-        "Isolement du point d'entrée Sniper...",
-        "Génération des cibles..."
-    ];
+        // 2. Récupérer l'identité du client et son historique
+        const nom = localStorage.getItem('client_nom');
+        const prenom = localStorage.getItem('client_prenom');
+        const historiqueStr = localStorage.getItem('historique_commandes');
+        let historique = [];
+        if (historiqueStr) {
+            historique = JSON.parse(historiqueStr);
+        }
 
-    function generatePrediction() {
-        document.getElementById('actionBtn').style.display = 'none';
-        document.getElementById('resultBox').style.display = 'none';
-        document.getElementById('loadingZone').style.display = 'block';
+        // 3. Modifier la page en fonction des données
+        const zoneAccueil = document.getElementById('zone-accueil');
+        const zoneTable = document.getElementById('zone-table');
+        const zoneHistorique = document.getElementById('zone-historique');
 
-        let msgIndex = 0;
-        const msgElement = document.getElementById('loadingMessage');
-        msgElement.innerText = loadingMessages[0];
-        
-        const textInterval = setInterval(() => {
-            msgIndex++;
-            if (msgIndex < loadingMessages.length) {
-                msgElement.innerText = loadingMessages[msgIndex];
-            }
-        }, 500);
+        // Message de bienvenue personnalisé
+        if (nom && prenom) {
+            zoneAccueil.innerHTML = `
+                <h1>MAQUIS LA JOIE</h1>
+                <p style="color:#FFC107; font-weight:bold;">Bonjour M./Mme ${prenom} ${nom}, ravi de vous revoir !</p>
+            `;
+        }
 
-        setTimeout(() => {
-            clearInterval(textInterval);
+        // Affichage de la table
+        if (tableFinale !== "") {
+            zoneTable.innerHTML = `📍 Vous êtes installé à la <br><strong>Table ${tableFinale}</strong>`;
+        } else {
+            zoneTable.innerHTML = `📍 Bienvenue ! <br><span style="font-size:1rem; color:#888;">(Table non détectée, vous pourrez la préciser lors de la commande)</span>`;
+        }
+
+        // Affichage de l'historique (les 2 dernières commandes)
+        if (historique.length > 0) {
+            let histHTML = `<div class="historique-box">
+                <h3>Vos dernières commandes</h3>`;
             
-            document.getElementById('loadingZone').style.display = 'none';
-            document.getElementById('resultBox').style.display = 'block';
-
-            // Micro-Données
-            const psycho = psychoStates[Math.floor(Math.random() * psychoStates.length)];
-            const pressure = (Math.random() * (95 - 40) + 40).toFixed(1) + "%";
+            // Prendre les 2 dernières commandes du plus récent au plus ancien
+            const dernieres = historique.slice(-2).reverse();
             
-            document.getElementById('psychoData').innerText = psycho;
-            document.getElementById('pressureData').innerText = pressure;
-
-            // Stratégie
-            let rand = Math.random();
-            let strat;
-            if (rand < 0.50) strat = strategies[0]; // Standard (50%)
-            else if (rand < 0.85) strat = strategies[1]; // Volatile (35%)
-            else strat = strategies[2]; // Rupture (15%)
-
-            // Calcul des cibles
-            let sniperTarget = parseFloat((Math.random() * (strat.targetMax - strat.targetMin) + strat.targetMin).toFixed(2));
-            
-            // La cible sécurisée est 30% plus basse que la cible sniper (avec un minimum de 1.20x)
-            let safeTarget = parseFloat((sniperTarget * 0.70).toFixed(2));
-            if (safeTarget < 1.20) safeTarget = 1.20;
-
-            document.getElementById('safeTarget').innerText = safeTarget.toFixed(2) + "x";
-            document.getElementById('sniperTarget').innerText = sniperTarget.toFixed(2) + "x";
-
-            // Calcul de l'Heure (SANS LES SECONDES)
-            let now = new Date();
-            now.setMinutes(now.getMinutes() + Math.floor(Math.random() * 4) + 2); 
-            let timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                          now.getMinutes().toString().padStart(2, '0');
-
-            document.getElementById('targetTime').innerText = timeStr;
-            document.getElementById('strategicAdvice').innerText = strat.advice;
-
-        }, 2800);
-    }
-
-    function resetRadar() {
-        document.getElementById('resultBox').style.display = 'none';
-        document.getElementById('actionBtn').style.display = 'block';
-    }
-</script>
+            dernieres.forEach(cmd => {
+                histHTML += `
+                <div class="hist-item">
+                    📅 ${cmd.date}<br>
+                    🛒 ${cmd.articles}<br>
+                    💰 <strong>${cmd.total} FCFA</strong>
+                </div>`;
+            });
+            histHTML += `</div>`;
+            zoneHistorique.innerHTML = histHTML;
+        }
+    </script>
 
 </body>
 </html>
